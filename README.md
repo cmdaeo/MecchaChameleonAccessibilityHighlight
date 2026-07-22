@@ -68,7 +68,7 @@ local WHISTLE_DEBOUNCE_MS = 500       -- minimum time between accepted whistles
 ## Troubleshooting
 
 - **Nothing highlights when I whistle**: Check the UE4SS console/log for
-  `[AccessibilityHighlighter]` messages. The sound cue name may differ from
+  `[AccessibilityHighlight]` messages. The sound cue name may differ from
   `"provoaction"` in your specific game - you'll need to find the correct
   sound name and update `WHISTLE_SOUND_KEYWORD` accordingly.
 - **Highlight doesn't disappear**: Confirm the character pawn is still valid
