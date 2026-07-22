@@ -6,7 +6,7 @@ A UE4SS Lua mod for **Meccha Chameleon** that highlights whistled/called charact
 
 ## What It Does
 
-When a whistle (or equivalent "call" sound) is triggered in Meccha Chameleon, this mod highlights the corresponding character using one of three visual methods for a short duration. Repeated whistles refresh the highlight timer instead of stacking or duplicating effects.
+When a whistle is triggered in Meccha Chameleon, this mod highlights the corresponding character using one of three visual methods for a short duration. Repeated whistles refresh the highlight timer instead of stacking or duplicating effects.
 
 ---
 
@@ -68,9 +68,3 @@ local WHISTLE_DEBOUNCE_MS = 500              -- minimum time between accepted wh
 - Hooks `AudioComponent:Play` and checks the sound asset name for the whistle keyword.
 - Debounces rapid repeated triggers per character (string-keyed by full object name, not the raw pawn reference, since UE4SS returns a new wrapper object per call).
 - Runs a lightweight polling loop (~100ms) to apply/update/clear highlights and expire them after the configured duration.
-
----
-
-## Contributing
-
-Issues and pull requests are welcome. If whistle detection doesn't work correctly, please include your UE4SS console log output showing the `[AccessibilityHighlight]` messages.
