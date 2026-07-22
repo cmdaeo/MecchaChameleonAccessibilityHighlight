@@ -1,81 +1,76 @@
 # Meccha Chameleon Accessibility Highlight
 
-An accessibility mod that makes whistled/called characters easier to spot by
-highlighting them with a visible marker - useful for players with visual
-tracking difficulties, colorblindness, or anyone who simply struggles to
-locate their character/companion in busy scenes.
+A UE4SS Lua mod for **Meccha Chameleon** that highlights whistled/called characters.
+
+---
 
 ## What It Does
 
-When someone whistles, the
-mod highlights that character using one of three visual methods for a short
-duration. Repeated whistles refresh the highlight timer instead of stacking
-or duplicating effects.
+When a whistle (or equivalent "call" sound) is triggered in Meccha Chameleon, this mod highlights the corresponding character using one of three visual methods for a short duration. Repeated whistles refresh the highlight timer instead of stacking or duplicating effects.
+
+---
+
+## Requirements
+
+- Meccha Chameleon
+- [UE4SS](https://github.com/UE4SS-RE/RE-UE4SS) installed
+
+---
 
 ## Installation
 
-1. Make sure [UE4SS](https://github.com/UE4SS-RE/RE-UE4SS) is installed for
-   your game.
-2. Copy the `AccessibilityHighlight` folder into your game's `Mods` directory.
-3. Launch the game.
+1. Install UE4SS for Meccha Chameleon if you haven't already.
+2. Extract this mod into your Meccha Chameleon `Mods` folder so the structure looks like:
+
+```
+Mods/
+└── AccessibilityHighlight/
+    ├── Scripts/
+    │   └── main.lua
+```
+
+3. Launch Meccha Chameleon.
+
+---
 
 ## Highlight Modes
 
-Open `main.lua` and edit this line near the top of the file:
+Open `Scripts/main.lua` and edit this line near the top:
 
 ```lua
 local HIGHLIGHT_MODE = "chams"
 ```
 
-Choose one of:
-
 | Mode | Description |
 |---|---|
-| `"light"` | Spawns a bright point light above the character's head |
-| `"chams"` | Makes the character render through walls/objects (X-ray style outline) |
+| `"light"` | Spawns a glowing point light above the character's head |
+| `"chams"` | Renders the character through walls/objects (X-ray outline) |
 | `"box"` | Spawns a solid marker box at the character's location |
 
-Save the file and reload the mod (or restart the game) for the change to
-take effect.
+Save and restart the game to apply the change.
+
+---
+
+## Configuration
+
+Additional tunables at the top of `main.lua`:
+
+```lua
+local WHISTLE_SOUND_KEYWORD = "provoaction"  -- sound cue keyword to detect
+local HIGHLIGHT_DURATION_MS = 2500           -- how long the highlight stays active
+local WHISTLE_DEBOUNCE_MS = 500              -- minimum time between accepted whistles
+```
+
+---
 
 ## How It Works
 
-- The mod listens for a specific whistle/call sound cue.
-- When detected, the corresponding character is highlighted using the mode
-  you selected above.
-- The highlight automatically clears after **2.5 seconds** unless the
-  character is whistled at again, in which case the timer resets.
-- Whistling again within **0.5 seconds** of a previous whistle is ignored
-  (debounced), so rapidly repeating the whistle input does not spawn
-  duplicate lights/boxes or reapply the highlight redundantly.
+- Hooks `AudioComponent:Play` and checks the sound asset name for the whistle keyword.
+- Debounces rapid repeated triggers per character (string-keyed by full object name, not the raw pawn reference, since UE4SS returns a new wrapper object per call).
+- Runs a lightweight polling loop (~100ms) to apply/update/clear highlights and expire them after the configured duration.
 
-## Customization
+---
 
-All of the following can be edited at the top of `main.lua`:
+## Contributing
 
-```lua
-local HIGHLIGHT_MODE = "chams"        -- "light" | "chams" | "box"
-local WHISTLE_SOUND_KEYWORD = "provoaction"  -- sound name keyword to detect
-local HIGHLIGHT_DURATION_MS = 2500    -- how long the highlight stays active
-local WHISTLE_DEBOUNCE_MS = 500       -- minimum time between accepted whistles
-```
-
-- Increase `HIGHLIGHT_DURATION_MS` if you want the highlight to stay visible
-  longer after whistling.
-- Increase `WHISTLE_DEBOUNCE_MS` if you notice any duplicate highlight
-  behavior with a particular game's sound setup.
-
-## Troubleshooting
-
-- **Nothing highlights when I whistle**: Check the UE4SS console/log for
-  `[AccessibilityHighlight]` messages. The sound cue name may differ from
-  `"provoaction"` in your specific game - you'll need to find the correct
-  sound name and update `WHISTLE_SOUND_KEYWORD` accordingly.
-- **Highlight doesn't disappear**: Confirm the character pawn is still valid
-  in-game; if a character is removed/despawned while highlighted, the mod
-  cleans up its highlight automatically on the next check cycle (every
-  ~100ms).
-- **"chams" mode doesn't seem visible through walls**: Some games use custom
-  post-process materials that don't render the custom depth stencil by
-  default - this may require an additional post-process material setup
-  specific to that game, which is outside the scope of this mod's base logic.
+Issues and pull requests are welcome. If whistle detection doesn't work correctly, please include your UE4SS console log output showing the `[AccessibilityHighlight]` messages.
